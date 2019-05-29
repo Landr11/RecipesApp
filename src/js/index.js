@@ -1,6 +1,8 @@
 
 //Import the Search class from 
 import Search from "./models/Search";
+//Import Recipe class
+import Recipe from "./models/Recipe";
 //Import the DOM strings from 
 import {elements, renderLoader, clearLoader} from "./views/base";
 //Import functions from 
@@ -13,10 +15,15 @@ import * as searchView from "./views/searchView";
  * Liked recipes object
 */
 
+/**
+ * 
+ * SEARCH CONTROLLER
+ * 
+ */
+
 const state = {};
 
-
-const controlSearch = async () =>{
+const controlSearch = async() =>{
     // 1. Get the query from view
     const query = searchView.getInput();
     console.log(query);
@@ -29,14 +36,18 @@ const controlSearch = async () =>{
         searchView.clearInput();
         searchView.clearResults();
         renderLoader(elements.searchRes);
-
-        // 4. Perform the Search
+        try{
+            // 4. Perform the Search
         await state.search.getResults();
 
         // 5.Render results on UI
         clearLoader();
         searchView.renderResults(state.search.result);
-    }
+      }catch(err){
+        alert("Something went wrong with the search");
+        clearLoader();
+    } 
+  }   
 };
 
 
@@ -46,6 +57,8 @@ elements.searchForm.addEventListener("submit", e => {
    controlSearch(); 
 });
 
+
+//EventListener to go to next or prev page .closest method to target ancestor element
 elements.searchResPages.addEventListener("click", e =>{
    const btn = e.target.closest(".btn-inline");
    if(btn){
@@ -54,4 +67,44 @@ elements.searchResPages.addEventListener("click", e =>{
        searchView.renderResults(state.search.result, goToPage);
    }
 });
+
+
+/**
+ * 
+ *RECIPE CONTROLLER 
+ * 
+ */
+
+ const controlRecipe = async () => {
+     //GET ID from URL using hash
+     const id = window.location.hash.replace("#", "");
+     console.log(id);
+
+     if(id){
+     // Prepare UI for changes
+
+     //Create a new Recipe Object
+     state.recipe = new Recipe(id);
+
+     try {
+        //Get recipe data
+     await state.recipe.getRecipe();
+
+     //Calculate servings and time
+     state.recipe.calcTime();
+     state.recipe.calcServings();
+
+     //Render recipe to UI
+     console.log(state.recipe);
+        } catch(err) {
+            alert("ERROR PROCESSING RECIPE!");
+       }
+    }
+ };
+
+ //Add EventListener to multiple event
+
+ ["hashchange", "load"].forEach(event => window.addEventListener(event, controlRecipe));
+
+
 
