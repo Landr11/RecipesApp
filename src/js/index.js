@@ -7,6 +7,8 @@ import Recipe from "./models/Recipe";
 import {elements, renderLoader, clearLoader} from "./views/base";
 //Import functions from 
 import * as searchView from "./views/searchView";
+//Import functions from 
+import * as recipeView from "./views/recipeView";
 
 /** The Global State of the app / Data 
  *  -Search Object / Search result
@@ -26,7 +28,7 @@ const state = {};
 const controlSearch = async() =>{
     // 1. Get the query from view
     const query = searchView.getInput();
-    console.log(query);
+    
 
     if(query){
         // 2. Create a New search object and add to state
@@ -82,19 +84,25 @@ elements.searchResPages.addEventListener("click", e =>{
 
      if(id){
      // Prepare UI for changes
+     recipeView.clearRecipe();
+     renderLoader(elements.recipe);
 
      //Create a new Recipe Object
      state.recipe = new Recipe(id);
 
      try {
-        //Get recipe data
+        //Get recipe data and parse Ingredients
      await state.recipe.getRecipe();
+     state.recipe.parseIngredients();
 
      //Calculate servings and time
      state.recipe.calcTime();
      state.recipe.calcServings();
 
      //Render recipe to UI
+
+     clearLoader();
+     recipeView.renderRecipe(state.recipe);
      console.log(state.recipe);
         } catch(err) {
             alert("ERROR PROCESSING RECIPE!");
