@@ -12,6 +12,19 @@ export const clearResults = () => {
     elements.searchResPages.innerHTML = "";
 };
 
+export const highlightSelected = id =>{
+    //Put all classes in an array to deselect
+    const resultsArr = Array.from(document.querySelectorAll(".results__link"));
+    resultsArr.forEach(el => {
+          el.classList.remove("results__link--active");
+    });
+
+    //use css selector to select links with attributes to be highlighted
+    document.querySelector(`a[href*="#${id}"]`).classList.add("results__link--active");
+
+};
+
+
 //Reduce the title size 
 const limmitRecipeTitle = (title, limit = 17) => {
     //reduce the title is the length is greater than 17

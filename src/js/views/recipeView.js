@@ -1,8 +1,36 @@
 import {elements} from "./base";
+//NPM Fractional to turn into fraction
+import { Fraction } from "fractional";
 
 export const clearRecipe = () => {
     elements.recipe.innerHTML = "";
 
+};
+
+//Turn count into fractions
+const formatCount = count => {
+      if(count){
+          /**
+           * count = 2.5 --> will lead to 5/2 but we want 2 1/2
+           * count = 0.5 --> 1/2
+           */
+          //Destructure. turn the number into a string, split, save into an array then parse to numbers
+          const [int, dec] = count.toString().split(".").map(el => parseInt(el, 10));
+
+          if (!dec) return count;
+          
+          if (int === 0){
+              const fr = new Fraction(count);
+              return `${fr.numerator}/${fr.denominator}`;     
+          } else {
+              //-int to convert only the decimal part
+              const fr = new Fraction(count - int);
+              return `${int} ${fr.numerator}/${fr.denominator}`;
+          }
+          
+       }
+
+       return "?";
 };
 
 const createIngredient = ingredient => `
@@ -10,7 +38,7 @@ const createIngredient = ingredient => `
            <svg class="recipe__icon">
                <use href="img/icons.svg#icon-check"></use>
            </svg>
-           <div class="recipe__count">${ingredient.count}</div>
+           <div class="recipe__count">${formatCount(ingredient.count)}</div>
            <div class="recipe__ingredient">
                <span class="recipe__unit">${ingredient.unit}</span>
                ${ingredient.ingredient}
@@ -44,12 +72,12 @@ export const renderRecipe = recipe => {
        <span class="recipe__info-text"> servings</span>
 
        <div class="recipe__info-buttons">
-           <button class="btn-tiny">
+           <button class="btn-tiny btn-decrease">
                <svg>
                    <use href="img/icons.svg#icon-circle-with-minus"></use>
                </svg>
            </button>
-           <button class="btn-tiny">
+           <button class="btn-tiny btn-increase">
                <svg>
                    <use href="img/icons.svg#icon-circle-with-plus"></use>
                </svg>
@@ -96,4 +124,19 @@ export const renderRecipe = recipe => {
 
    `;
    elements.recipe.insertAdjacentHTML("afterbegin", markup);
+};
+
+
+//Update servings and Ingredients on button click increase - decrease
+export const updateServingsIngredients = recipe =>{ 
+    //Update servings
+    document.querySelector(".recipe__info-data--people").textContent = recipe.servings;
+
+    //Update ingredients
+    const countElements = Array.from(document.querySelectorAll(".recipe__count"));
+    countElements.forEach((el, i) => {
+        //loops through the recipe.ingredients each time and update the count
+        el.textContent = formatCount(recipe.ingredients[i].count);
+    });
+
 };

@@ -87,6 +87,9 @@ elements.searchResPages.addEventListener("click", e =>{
      recipeView.clearRecipe();
      renderLoader(elements.recipe);
 
+     //Highlight selected search item
+     if(state.search) searchView.highlightSelected(id);
+
      //Create a new Recipe Object
      state.recipe = new Recipe(id);
 
@@ -115,4 +118,20 @@ elements.searchResPages.addEventListener("click", e =>{
  ["hashchange", "load"].forEach(event => window.addEventListener(event, controlRecipe));
 
 
+// Handling recipe button clicks 
+elements.recipe.addEventListener("click", e => {
+    // use the target method and css selectors to target elements that arent yet on the page
+   if(e.target.matches(".btn-decrease, .btn-decrease *")){
+    //Decrease button clicked 
+    if (state.recipe.servings > 1 ){
+        state.recipe.updateServings("dec");
+        recipeView.updateServingsIngredients(state.recipe);
+      }
+   } else if (e.target.matches(".btn-increase, .btn-increase *")){
+    //Increase button clicked
+    state.recipe.updateServings("inc")
+    recipeView.updateServingsIngredients(state.recipe);
+   }
+   console.log(state.recipe);
+});
 
