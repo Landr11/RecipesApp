@@ -20,13 +20,13 @@ export const highlightSelected = id =>{
     });
 
     //use css selector to select links with attributes to be highlighted
-    document.querySelector(`a[href*="#${id}"]`).classList.add("results__link--active");
+    document.querySelector(`.results__link[href*="#${id}"]`).classList.add("results__link--active");
 
 };
 
 
 //Reduce the title size 
-const limmitRecipeTitle = (title, limit = 17) => {
+export const limitRecipeTitle = (title, limit = 17) => {
     //reduce the title is the length is greater than 17
     const newTitle = [];
     if(title.length > limit){
@@ -55,7 +55,7 @@ const renderRecipe = recipe => {
             <img src="${recipe.image_url}" alt="${recipe.title}">
         </figure>
         <div class="results__data">
-            <h4 class="results__name">${limmitRecipeTitle(recipe.title)}</h4>
+            <h4 class="results__name">${limitRecipeTitle(recipe.title)}</h4>
             <p class="results__author">${recipe.publisher}</p>
         </div>
     </a>
