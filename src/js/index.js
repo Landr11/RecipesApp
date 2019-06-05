@@ -35,7 +35,7 @@ import {elements, renderLoader, clearLoader} from "./views/base";
  */
 
 const state = {};
-window.state = state;
+
 
 const controlSearch = async() =>{
     // 1. Get the query from view
@@ -89,11 +89,10 @@ elements.searchResPages.addEventListener("click", e =>{
  * 
  */
 
-
  const controlRecipe = async () => {
      //GET ID from URL using hash
      const id = window.location.hash.replace("#", "");
-     console.log(id);
+    
 
      if(id){
      // Prepare UI for changes
@@ -126,8 +125,8 @@ elements.searchResPages.addEventListener("click", e =>{
     }
  };
 
- //Add EventListener to multiple event, on page load
 
+ //Add EventListener to multiple event, on page load
  ["hashchange", "load"].forEach(event => window.addEventListener(event, controlRecipe));
 
 
@@ -180,9 +179,7 @@ elements.searchResPages.addEventListener("click", e =>{
  *LIKE CONTROLLER 
  * 
  */
-//Testing
-state.likes = new Likes();
-likesView.toggleLikeMenu(state.likes.getNumberLikes());
+
 
 const controlLike = () => {
     //If the recipe is not liked yet, it becomes a new like object
@@ -217,11 +214,27 @@ const controlLike = () => {
 
            //Remove like the UI list
            likesView.deleteLike(currentID);  
-            
+
       }
     likesView.toggleLikeMenu(state.likes.getNumberLikes());
 };
 
+
+
+//Restore liked recipes on page load
+window.addEventListener("load", () => {
+    //Create a new like object on load
+    state.likes = new Likes();
+
+    //Read localStorage for saved data
+    state.likes.readStorage();
+
+    //Toggle the like menu button/on off
+    likesView.toggleLikeMenu(state.likes.getNumberLikes());
+
+    //Render the existing likes
+    state.likes.likes.forEach(like => likesView.renderLike(like));
+});
 
 
 
@@ -247,4 +260,3 @@ elements.recipe.addEventListener("click", e => {
    }
 });
 
-window.l = new List();
